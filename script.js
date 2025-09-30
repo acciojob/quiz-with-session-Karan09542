@@ -31,8 +31,20 @@ const questions = [
 ];
 
 const questionsElement = document.getElementById("questions");
+const scoreElement = document.getElementById("score");
 const submit = document.getElementById("submit");
-const userAnswers = ["Paris", "Everest", "Russia", "Jupiter", "Ottawa"]
+const userAnswers = JSON.parse(sessionStorage.getItem("progress")) || Array(questions.length).fill("");
+const score = JSON.parse(localStorage.getItem("score")) || "";
+
+
+if(score){
+	scoreElement.innerHTML = `Your score is ${score} out of ${questions.length}.`
+}
+
+function onCheck(index, value){
+	userAnswers[index] = value;
+	sessionStorage.setItem("progress", JSON.stringify(userAnswers))
+}
 // Display the quiz questions and choices
 function renderQuestions() {
   for (let i = 0; i < questions.length; i++) {
@@ -49,6 +61,7 @@ function renderQuestions() {
       if (userAnswers[i] === choice) {
         choiceElement.setAttribute("checked", true);
       }
+	   choiceElement.addEventListener("click", () => onCheck(i,choice))
       const choiceText = document.createTextNode(choice);
       questionElement.appendChild(choiceElement);
       questionElement.appendChild(choiceText);
@@ -60,11 +73,21 @@ renderQuestions();
 
 function handleSubmit(){
 	const answers = [];
+	let score = 0;
 	for(let i=0; i<questions.length; i++){
-		const radio = document.querySelector(`input[name=question-${i}]`);
-		answers.push(radio.value)
-	}
-	localStorage.setItem("progress", JSON.stringify(answers))
+		const radios = document.querySelectorAll(`input[name=question-${i}]`);
+		Array.from(radios).forEach(radio => {
+			if(radio.checked){
+				answers.push(radio.value)
+				if(radio.value === questions[i].answer) {
+					score++;
+				}
+			}
+		})
+	};
+
+	scoreElement.innerHTML = `Your score is ${score} out of ${questions.length}.`
+	localStorage.setItem("score", JSON.stringify(score))
 }
 submit.addEventListener("click",handleSubmit)
 

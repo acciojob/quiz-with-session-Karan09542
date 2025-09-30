@@ -30,6 +30,9 @@ const questions = [
   },
 ];
 
+const questionsElement = document.getElementById("questions");
+const submit = document.getElementById("submit");
+const userAnswers = ["Paris", "Everest", "Russia", "Jupiter", "Ottawa"]
 // Display the quiz questions and choices
 function renderQuestions() {
   for (let i = 0; i < questions.length; i++) {
@@ -54,3 +57,22 @@ function renderQuestions() {
   }
 }
 renderQuestions();
+
+function handleSubmit(){
+	const answers = [];
+	for(let i=0; i<questions.length; i++){
+		const radio = document.querySelector(`input[name=question-${i}]`);
+		answers.push(radio.value)
+	}
+	localStorage.setItem("progress", JSON.stringify(answers))
+}
+submit.addEventListener("click",handleSubmit)
+
+
+
+
+
+
+
+
+
